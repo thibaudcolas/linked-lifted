@@ -8,6 +8,9 @@
 	<property name="tomcat.port" value="8080"/>
 	<property name="tomcat.server" value="localhost"/>
 	<property name="tomcat.url" value="http://${tomcat.server}:${tomcat.port}"/>
+	
+	<property name="tomcat.msg.start" value="Tomcat started"/>
+	<property name="tomcat.msg.stop" value="Tomcat stopped"/>
 
 	<property name="project.home" value="/Library/Datalift/datalift-home"/>
 	<property name="project.modules" value="${project.home}/modules"/>
@@ -47,6 +50,7 @@
 	<!-- 
 		We have to wait for Tomcat to stop / start before proceeding.
 		Tomcat is launched with a specific JVM arg for Datalift.
+		We add notifications with say and growlnotify.
 	 -->
 	<target name="start">
 		<java jar="${tomcat.bootstrap}" fork="true" spawn="true">
@@ -57,7 +61,10 @@
 			<http url="${module.url}"/>
 		</waitfor>
 		<exec executable="say" spawn="yes">
-			<arg line="Tomcat started"/>
+			<arg line="${tomcat.msg.start}"/>
+		</exec>
+		<exec executable="growlnotify" spawn="yes">
+			<arg line="growlnotify -a 'Tomcat Controller' -m '${tomcat.msg.start}'"/>
 		</exec>
 	</target>
 
@@ -72,7 +79,10 @@
 			</not>
 		</waitfor>
 		<exec executable="say" spawn="yes">
-			<arg line="Tomcat stopped"/>
+			<arg line="${tomcat.msg.stop}"/>
+		</exec>
+		<exec executable="growlnotify" spawn="yes">
+			<arg line="growlnotify -a 'Tomcat Controller' -m '${tomcat.msg.stop}'"/>
 		</exec>
 	</target>
 
