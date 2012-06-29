@@ -56,6 +56,9 @@
 		<waitfor maxwait="10000" checkevery="1000">
 			<http url="${module.url}"/>
 		</waitfor>
+		<exec executable="say" spawn="yes">
+			<arg line="Tomcat started"/>
+		</exec>
 	</target>
 
 	<target name="stop">
@@ -68,6 +71,9 @@
 				<socket server="${tomcat.server}" port="${tomcat.port}"/>
 			</not>
 		</waitfor>
+		<exec executable="say" spawn="yes">
+			<arg line="Tomcat stopped"/>
+		</exec>
 	</target>
 
 	<!-- ================ URL opener ============================== -->
