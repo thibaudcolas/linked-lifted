@@ -33,7 +33,10 @@
       <section id="main_content" class="inner">
         <h1>Module development for Datalift</h1>
 
-<h2>Datalift architecture</h2>
+<ul>
+<li><a href="https://gist.github.com/2989006">Fast-paced build script as a Gist</a></li>
+<li><a href="https://delicious.com/stacks/view/EqgnIa">UI inspiration stack on Delicious</a></li>
+</ul><h2>Datalift architecture</h2>
 
 <p>The <a href="http://datalift.org/">Datalift</a> publishing platform is developed on a large technology stack.</p>
 
@@ -77,7 +80,6 @@
 </ol><h3>Compilation with Ant</h3>
 
 <p>Datalift and its modules must be compiled using the <a href="https://ant.apache.org/">Ant</a> Java building tool. The Datalift architecture and each of its modules have their own Ant build file which will create one JAR per module according to its own rules.
-
 For a given module, the command to compile its sources and retrieve its JAR is <code>ant dist</code> : call to the dist target of our build.xml file.</p>
 
 <p>We can call it from our own script using :</p>
