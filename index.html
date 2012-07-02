@@ -35,14 +35,31 @@
 
 <h2>Datalift architecture</h2>
 
-<p>The <a>Datalift</a> publishing platform is developed on a large technology stack.
-Server-side :</p>
+<p>The <a href="http://datalift.org/">Datalift</a> publishing platform is developed on a large technology stack.</p>
 
-<p><em>TODO</em></p>
+<p><strong>Server-side :</strong></p>
 
-<p>Client-side :</p>
+<ul>
+<li>JEE 5</li>
+<li>Jersey 1.9</li>
+<li>Shiro 1.1.0</li>
+<li>Velocity 1.7</li>
+<li>Sesame 2.6</li>
+<li>Empire 0.7</li>
+<li>Log4j 1.2.16</li>
+<li>OpenCSV 2.3</li>
+<li>Wro4j 1.4.1</li>
+</ul><p><strong>Client-side :</strong></p>
 
-<p><em>TODO</em></p>
+<ul>
+<li>Velocity 1.7</li>
+<li>HTML</li>
+<li>CSS</li>
+<li>Javascript</li>
+<li>jQuery 1.5.2</li>
+<li>jQuery UI 1.8.9</li>
+<li>jQuery grid 4.0.0</li>
+</ul><p>The Velocity Engine uses the Velocity Template Language (VTL), but web pages can also be made entirely out of static HTML.</p>
 
 <h2>Overview of the development workflow</h2>
 
@@ -59,7 +76,8 @@ Server-side :</p>
 <li>Refreshing our modifications.</li>
 </ol><h3>Compilation with Ant</h3>
 
-<p>Datalift and its modules must be compiled using the <a title="Ant build tool">Ant</a> Java building tool. The Datalift architecture and each of its modules have their own Ant build file which will create one JAR per module according to its own rules.
+<p>Datalift and its modules must be compiled using the <a href="https://ant.apache.org/">Ant</a> Java building tool. The Datalift architecture and each of its modules have their own Ant build file which will create one JAR per module according to its own rules.
+
 For a given module, the command to compile its sources and retrieve its JAR is <code>ant dist</code> : call to the dist target of our build.xml file.</p>
 
 <p>We can call it from our own script using :</p>
@@ -139,7 +157,7 @@ It is unneccesary to redeploy the WAR nor the whole datalift-home at every modif
 &lt;/target&gt;
 </code></pre>
 
-<p>To not have to use the command line, we use <a>LiveReload</a>. LiveReload monitors our module's source code and automatically triggers browser refresh each time a modification is detected. LiveReload also allows to preceed each refresh by a script execution, thus we're going to use it to fully automate our workflow :</p>
+<p>To not have to use the command line, we use <a href="http://livereload.com/">LiveReload</a>. LiveReload monitors our module's source code and automatically triggers browser refresh each time a modification is detected. LiveReload also allows to preceed each refresh by a script execution, thus we're going to use it to fully automate our workflow :</p>
 
 <ul>
 <li>At any modification inside the <code>web</code> directory, LiveReload will execute <code>ant -buildfile live-build.xml deploy</code>, which will update the JAR file.</li>
@@ -150,7 +168,48 @@ It is unneccesary to redeploy the WAR nor the whole datalift-home at every modif
 
 <h2>StringToURI integration</h2>
 
-<p>As a linked data publishing platform, Datalift needs dataset interconnection modules.</p>
+<p>As a linked data publishing platform, Datalift needs dataset interconnection modules. <a href="http://stringtouri.assembla.me">StringToURI</a> is a little tool which replaces strings inside a dataset by URIs to another dataset's entities according to different criteria. It'll be integrated into Datalift as a starter project to be done before bigger module interface developments.</p>
+
+<h3>Interface</h3>
+
+<p>Here's our final mockup :</p>
+
+<p><img src="https://github.com/ThibWeb/linked-lifted/raw/gh-pages/stringtouri-mockup.png" alt="Mockup of the StringToURI module interface"></p>
+
+<p>We use a simple two columns layout. While it makes the path to completion harder to understand, it makes it easier to distinguish between the two groups of inputs : one for the dataset we're working on, and one for the one we'll link to.
+Each field is surrounded by a label and a much longer description, where the field maybe mentionned as required. Fields' placeholders also tell whether the fields are required, and color code helps distinction between correct values and errors / empty fields.</p>
+
+<p>Here's the final result :</p>
+
+<p><img src="https://github.com/ThibWeb/linked-lifted/raw/gh-pages/stringtouri-result.png" alt="The final StringToURI module interface"></p>
+
+<p>The two groups are much more separated (using fieldsets), a cancel button has ben added as a <a href="http://www.lukew.com/ff/entry.asp?571">secondary action</a>, and all select inputs have been replaced with text fields with autocompletion to allow faster input and copy and paste.</p>
+
+<p>While this result may not be as eye candy as the mockup, it makes use of the Datalift default theme while introducing new elements such as top-label inputs. (<a href="http://www.lukew.com/ff/entry.asp?504">Here is why.</a>)</p>
+
+<p>Non-default Datalift CSS :</p>
+
+<pre><code>.form-stack {
+    display:block;
+    margin:20px 0 10px;
+    padding:0 5px 0;
+}
+
+.form-stack label {
+    color:#333;
+    font-weight:bold;   
+    margin-bottom:3px;
+    display:block;
+}
+
+.form-stack p {
+    margin:2px 0;
+    color:#666;
+    font-size:80%;
+}
+</code></pre>
+
+<p>Everything is built to keep the overall Datalift look and feel while improving usability, accessibility (visual cues with color, textual cues) and completion time. We want to keep using the default CSS and jQuery UI theme as much as possible.</p>
       </section>
     </div>
 
