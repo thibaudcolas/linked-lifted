@@ -19,13 +19,13 @@
 	<title>#i18n('stringtouri.title') - Datalift</title>
 
 	#css_links
-	<link rel="stylesheet" type="text/css" href="http://localhost:8000/converter.css"/>
+	<link rel="stylesheet" type="text/css" href="http://localhost:8000/interface.css"/>
 	<!-- CSS link hack with `server` - Need to figure out how to do it properly. -->
-	<!--<link rel="stylesheet" type="text/css" href="${moduleUri}/converter.css"/>-->
+	<!--<link rel="stylesheet" type="text/css" href="${moduleUri}/interface.css"/>-->
 </head>
 <body>
 	#banner
-	<div class="ui-widget ui-widget-content" id="workspace">
+	<div class="ui-widget-content" id="workspace">
 		<h3 class="ui-widget-header dl-widget-header">#if ($current == $english) ${it.title} #i18n('project.label') #{else} #i18n('project.label') ${it.title} #end &mdash; #i18n('stringtouri.title')</h3>
 		<div class="dl-panel">
 			<form id="linkage-form" method="post" action="${baseUri}/stringtouri">
@@ -77,8 +77,8 @@
 	</div>
 	#footer
 	#script_links
-	<script type="text/javascript" src="http://localhost:8000/converter.js"></script>
+	<script type="text/javascript" src="http://localhost:8000/interface.js"></script>
 	<!-- JS link hack with `server` - Need to figure out how to do it properly. -->
-	<!--<script language="javascript" src="${moduleUri}/converter.js"/>-->
+	<!--<script language="javascript" src="${moduleUri}/interface.js"/>-->
 </body>
 </html>

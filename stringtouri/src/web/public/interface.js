@@ -6,7 +6,7 @@ $(document).ready(function(){
 	var noneEN = "None";
 	var noneFR = "Aucune";
 
-	var form = $("#linkage-form");  
+	var form = $("#linkage-form");
 	var submit = $("#convert-submit");
 	var cancel = $("#convert-cancel");
 	var theirds = $("#their-dataset");
@@ -58,53 +58,54 @@ $(document).ready(function(){
 		field.addClass("ui-state-error-text");
 		field.css("border-color",errorcolor);
 		field.next("p").addClass("ui-state-error-text");
+		return false;
 	}
 
 	function okState(field, color) {
 		field.removeClass("ui-state-error-text");
 		field.css("border-color",color);
 		field.next("p").removeClass("ui-state-error-text");
+		return true;
 	}
 
 	function validateMandatory(field, values) {
-		if(jQuery.inArray(field.val(), values) != -1) {
-			okState(field, successcolor);
-			return true;
+		var valid;
+		if(jQuery.inArray(field.val().trim(), values) != -1) {
+			valid = okState(field, successcolor);
 		}
 		else {
-			errorState(field);
-			return false;
+			valid = errorState(field);
 		}
+		return valid;
 	}
 
 	function validateOptional(field, values) {
 		var v = field.val().trim();
+		var valid;
 		if(jQuery.inArray(v, values) != -1) {
-			okState(field, successcolor);
-			return true;
+			valid = okState(field, successcolor);
 		}
 		else if ( !v.length || v == noneEN || v == noneFR) {
-			okState(field, defaultcolor);
-			return true;
+			valid = okState(field, defaultcolor);
 		}
 		else {
-			errorState(field);
-			return false;
+			valid = errorState(field);
 		}
+		return valid;
 	}
-
+	
 	submit.button();
 	cancel.button();
 
 	theirds.autocomplete({source: datasets, minLength: 0, delay: 0});
 	theirds.blur(function() {validateMandatory(theirds, datasets);});
-	ourclass.autocomplete({source: ourclasses, minLength: 1, delay: 200});
+	ourclass.autocomplete({source: ourclasses, minLength: 0, delay: 200});
 	ourclass.blur(function() {validateOptional(ourclass, ourclasses);});
-	theirclass.autocomplete({source: theirclasses, minLength: 1, delay: 200});
+	theirclass.autocomplete({source: theirclasses, minLength: 0, delay: 200});
 	theirclass.blur(function() {validateOptional(theirclass, theirclasses);});
-	ourpredicate.autocomplete({source: ourpredicates, minLength: 1, delay: 200});
+	ourpredicate.autocomplete({source: ourpredicates, minLength: 0, delay: 300});
 	ourpredicate.blur(function() {validateMandatory(ourpredicate, ourpredicates);});
-	theirpredicate.autocomplete({source: theirpredicates, minLength: 1, delay: 200});
+	theirpredicate.autocomplete({source: theirpredicates, minLength: 0, delay: 300});
 	theirpredicate.blur(function() {validateMandatory(theirpredicate, theirpredicates);});
 
 	form.submit(function(){

@@ -1,15 +1,10 @@
-#linkage-form fieldset {
+fieldset {
 	display:inline;
 }
 
-#linkage-form legend {
-	color:#333;
+legend {
 	font-weight:bold;
 	font-size:120%;
-}
-
-.dl-form-elt {
-	margin:0;
 }
 
 .form-stack {
@@ -19,7 +14,6 @@
 }
 
 .form-stack label {
-	color:#333;
 	font-weight:bold;	
 	margin-bottom:3px;
 	display:block;
@@ -35,6 +29,6 @@
 	font-size:80%;
 }
 
-#linkage-form input[type=submit] {
+input[type=submit] {
 	margin: 0 20px;
 }

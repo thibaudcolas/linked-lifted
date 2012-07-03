@@ -1,6 +1,6 @@
 /*
- * Copyright / Copr. LIRMM
- * Contributor(s) : T. Colas
+ * Copyright / LIRMM 2012
+ * Contributor(s) : T. Colas, F. Scharffe
  *
  * Contact: thibaud.colas@etud.univ-montp2.fr
  *
@@ -31,8 +31,9 @@
  * knowledge of the CeCILL license and that you accept its terms.
  */
 
-package org.datalift.stringtouri.ui;
+package org.datalift.stringtouri;
 
+import java.io.ObjectStreamException;
 import java.net.URI;
 import java.util.Map;
 import java.util.HashMap;
@@ -42,16 +43,26 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static javax.ws.rs.core.Response.Status.*;
+
 import org.datalift.fwk.Configuration;
 import org.datalift.fwk.log.Logger;
 import org.datalift.fwk.project.*;
-import org.datalift.fwk.project.Source;
-import org.datalift.fwk.project.Source.SourceType;
+import org.datalift.fwk.BaseModule;
+import org.datalift.fwk.Configuration;
+import org.datalift.fwk.project.Project;
+import org.datalift.fwk.project.ProjectManager;
+import org.datalift.fwk.project.ProjectModule;
+
+import com.sun.jersey.api.view.Viewable;
+
+import static org.datalift.fwk.MediaTypes.*;
 
 
 /*
@@ -61,8 +72,8 @@ import org.datalift.fwk.project.Source.SourceType;
  * @author tcolas
  */
 @Path(StringToURI.MODULE_NAME)
-public class StringToURI extends BaseConverterModule
-{
+public class StringToURI extends BaseModule implements ProjectModule {
+    
     //-------------------------------------------------------------------------
     // Constants
     //-------------------------------------------------------------------------
@@ -77,14 +88,69 @@ public class StringToURI extends BaseConverterModule
     private final static Logger log = Logger.getLogger();
 
     //-------------------------------------------------------------------------
+    // Instance members
+    //-------------------------------------------------------------------------
+
+    /** The requested module position in menu. */
+    private final int position;
+    /** The requested module label in menu. */
+    private final String label;
+
+    //-------------------------------------------------------------------------
     // Constructors
     //-------------------------------------------------------------------------
 
     /**
-     * Creates a new UIModule instance.
+     * Creates a new StringToURI instance.
      */
     public StringToURI() {
-        super(MODULE_NAME, 1000000000, SourceType.RdfFileSource);
+        super(MODULE_NAME);
+        position = 10;
+        label = "!";
+    }
+
+    //-------------------------------------------------------------------------
+    // Project management
+    //-------------------------------------------------------------------------
+
+    /**
+     * Retrieves a {@link Project} using its URI.
+     * @param  projuri the project URI.
+     *
+     * @return the project.
+     * @throws ObjectStreamException if the project does not exist.
+     */
+    private final Project getProject(URI projuri) throws ObjectStreamException {
+        ProjectManager pm = Configuration.getDefault().getBean(ProjectManager.class);
+        Project p = pm.findProject(projuri);
+                
+        return p;
+    }
+
+    private final Viewable newViewable(String templateName, Object it) {
+        return new Viewable("/" + this.getName() + templateName, it);
+    }
+
+    @Override
+    public UriDesc canHandle(Project p) {
+        UriDesc uridesc = null;
+
+        try {           
+            // The project can be handled if it has at least one source.
+            if (p.getSources().size() > 0) {
+                uridesc = new UriDesc(this.getName() + "?project=" + p.getUri(),"StringToURI"); 
+                
+                if (this.position > 0) {
+                    uridesc.setPosition(this.position);
+                }
+            }
+            
+        }
+        catch (Exception e) {
+            log.fatal("Uh !", e);
+            throw new RuntimeException(e);
+        }
+        return uridesc;
     }
 
     //-------------------------------------------------------------------------
@@ -92,14 +158,13 @@ public class StringToURI extends BaseConverterModule
     //-------------------------------------------------------------------------
 
     @GET
-    public Response getIndexPage(@QueryParam("project") URI projectId) {
+    @Produces(MediaType.TEXT_HTML)
+    public Response getIndexPage(@QueryParam("project") URI projectId) throws ObjectStreamException {
         // Retrieve project.
         Project proj = this.getProject(projectId);
-        // Display conversion configuration page with given args.
-        Map<String, Object> args = new HashMap<String, Object>();
+
+        HashMap<String, Object> args = new HashMap<String, Object>();
         args.put("it", proj);
-        args.put("converter", this);
-        return Response.ok(this.newViewable("/converter.vm", args))
-                .build();
+        return Response.ok(this.newViewable("/interface.vm", args)).build();
     }
 }
