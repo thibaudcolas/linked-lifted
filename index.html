@@ -191,27 +191,127 @@ Each field is surrounded by a label and a much longer description, where the fie
 
 <p>Non-default Datalift CSS :</p>
 
-<pre><code>.form-stack {
+<pre><code>    .form-stack {
     display:block;
-    margin:20px 0 10px;
-    padding:0 5px 0;
+    margin:10px 0 0;
+    padding:10px;
 }
 
 .form-stack label {
-    color:#333;
     font-weight:bold;   
     margin-bottom:3px;
     display:block;
 }
 
+.form-stack input[type=text] {
+    width:350px;
+}
+
 .form-stack p {
     margin:2px 0;
     color:#666;
-    font-size:80%;
+    font-size:75%;
+}
+
+.form-stack .ui-icon {
+    float:left;
+    margin-right: 5px;
+    display:none;
 }
 </code></pre>
 
-<p>Everything is built to keep the overall Datalift look and feel while improving usability, accessibility (visual cues with color, textual cues) and completion time. We want to keep using the default CSS and jQuery UI theme as much as possible.</p>
+<p>Everything is built to keep the overall Datalift look and feel while improving usability, accessibility (visual cues with colors and icons, textual cues as well) and completion time. We want to keep using the default CSS and jQuery UI theme as much as possible.</p>
+
+<p>Regarding behavior, our module makes use of jQuery and of its multiple capabilities. We use it to change the look of our fields according to their state of completion :</p>
+
+<pre><code>function errorState(field) {
+    field.removeClass("ui-state-success");
+    field.parent().addClass("ui-state-error");
+    field.next("p").contents().first()
+        .removeClass("ui-icon-help ui-icon-check")
+        .addClass("ui-icon-alert")
+        .show();
+}
+</code></pre>
+
+<p>We also use its autocompletion widget and its event handler API : </p>
+
+<pre><code>ourpredicate.autocomplete({source: ourpredicates, minLength: 0, delay: 300});
+ourpredicate.blur(function() {validateMandatory(ourpredicate, ourpredicates);});
+theirpredicate.autocomplete({source: theirpredicates, minLength: 0, delay: 300});
+theirpredicate.blur(function() {validateMandatory(theirpredicate, theirpredicates);});
+
+$("#linkage-form").submit(function(){return validateAll();});
+</code></pre>
+
+<p>The web page's HTML / structure is made with <a href="https://velocity.apache.org/">Velocity</a>, which syntaxe looks like this :</p>
+
+<pre><code>&lt;h3 class="ui-widget-header dl-widget-header"&gt;
+    #if ($current == $english) 
+        ${it.title} #i18n('project.label') 
+    #else 
+        #i18n('project.label') ${it.title} 
+    #end 
+    &amp;mdash; #i18n('stringtouri.title')
+&lt;/h3&gt;
+</code></pre>
+
+<p>Here we use it to display our title in a different order whether the current language is english or french. <code>#i18n</code>manages content internationalization while ${var} is used to access variables defined inside our Java code.</p>
+
+<p>Velocity can manage complex object types like lists : </p>
+
+<pre><code>var datasets = [
+    #foreach( $source in $sources )
+    "$source",
+    #end
+];
+</code></pre>
+
+<h3>Back-end</h3>
+
+<p>To serve our interfaces with their Velocity template language, we have to manage them with Java classes.
+We use Jax-RS / <a href="http://jersey.java.net/">Jersey</a> annotations to indicate our web architecture to the Datalift Core : </p>
+
+<pre><code>@Path(StringToURI.MODULE_NAME)
+public class StringToURI extends BaseModule implements ProjectModule {
+...
+}
+</code></pre>
+
+<p>We must indicate which kind of project our module can handle to our ProjectManager :</p>
+
+<pre><code>public UriDesc canHandle(Project p) {
+    // The project can be handled if it has at least two RDF sources.
+    if (hasMultipleRDFSources(p.getSources(), 2)) {
+        // Here the URL and label to our object in ProjectManager
+        UriDesc uridesc = new UriDesc(this.getName() + "?project=" + p.getUri(),this.label);
+    }       
+    return uridesc;
+}
+</code></pre>
+
+<p>We then use annotations to indicate what to serve when asking for the module's index page : Here, we are using GET, producing HTML and one of the query parameters is our current project's URI.<br>
+We access Datalift's internal repository to make its data available to our Velocity template by using the <code>args</code> HashMap : <code>args.put("sources", sourcesURIs);</code>to autocomplete source fields.</p>
+
+<pre><code>@GET
+@Produces(MediaType.TEXT_HTML)
+public Response getIndexPage(@QueryParam("project") URI projectId) throws ObjectStreamException {
+    // Retrieve the current project and its sources.
+    Project proj = this.getProject(projectId);
+    LinkedList&lt;String&gt; sourcesURIs = getSourcesURIs(proj.getSources());
+    // Retrieve Datalift's internal repository.
+    Repository internal = Configuration.getDefault().getInternalRepository();
+    RepositoryConnection internalco = internal.newConnection();
+
+    HashMap&lt;String, Object&gt; args = new HashMap&lt;String, Object&gt;();
+    args.put("it", proj);
+    args.put("sources", sourcesURIs);
+    args.put("classes", getAllClasses(internalco, sourcesURIs));
+    args.put("predicates", getAllPredicates(internalco, sourcesURIs));
+
+    return Response.ok(this.newViewable("/interface.vm", args)).build();
+}
+</code></pre>
       </section>
     </div>
 
