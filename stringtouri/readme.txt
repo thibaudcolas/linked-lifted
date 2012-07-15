@@ -1,9 +1,8 @@
-# Linked-lifted : Interface revamping for interconnection modules
+Title: StringToURI Readme
+Author: Thibaud Colas
+Date: 15/07/12
 
-Linked-lifted hosts code and tools used while creating new interfaces for linked data tools. 
-[Datalift](http://datalift.org/) is a linked data publishing platform where those tools — modules — are used.
-
-## [Linked-lifted GitHub Page](http://thibweb.github.com/linked-lifted/)
+# StringToURI Readme #
 
 ## tl;dr ##
 
@@ -32,19 +31,19 @@ If OO and O are found equal, the first triple will become S, P, SS and the secon
 
 In a given dataset, an event takes place in a city.
 
-    <givenDataset:AwesomeMusicFestival> . <givenDataset:takesPlaceIn> . "Acapulco"
-    
+	<givenDataset:AwesomeMusicFestival> . <givenDataset:takesPlaceIn> . "Acapulco"
+	
 It'd be better the AwesomeMusicFestival was directly linked to the entity Acapulco, not only to a string describing it.
 Let's find a reference dataset which contains the entity Acapulco.
 
-    <referenceDataset:Acapulco> . <rdf:type> . <referenceDataset:City>
-    <referenceDataset:Acapulco> . <referenceDataset:name> "Acapulco"
-    ...
-    
+	<referenceDataset:Acapulco> . <rdf:type> . <referenceDataset:City>
+	<referenceDataset:Acapulco> . <referenceDataset:name> "Acapulco"
+	...
+	
 We can compare the two predicates `<givenDataset:takesPlaceIn>` and `<referenceDataset:name>` to obtain :
 
-    <givenDataset:AwesomeMusicFestival> . <givenDataset:takesPlaceIn> . <referenceDataset:Acapulco>
-    
+	<givenDataset:AwesomeMusicFestival> . <givenDataset:takesPlaceIn> . <referenceDataset:Acapulco>
+	
 ## External resources ##
 
 * StringToURI was made in Java using the OpenRDF Sesame API and RDF repositories.
