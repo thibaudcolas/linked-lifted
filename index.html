@@ -307,8 +307,6 @@ $("#linkage-form").submit(function(){return validateAll();});
 We use Jax-RS / <a href="http://jersey.java.net/">Jersey</a> annotations to indicate our web architecture to the Datalift Core : </p>
 
 <pre><code>@Path(StringToURI.MODULE_NAME)
-
-
 public class InterconnectionController extends BaseModule implements ProjectModule {
 ...
 }
@@ -411,7 +409,7 @@ try {
 <li>AJAX calls to validate user input, thus keeping all of the validation logic on the server side.</li>
 <li>New intermediate state which allows to visualize new triples before validating the update.</li>
 <li>New ways to call the process from other modules / to pre-fill the form.</li>
-</ul><h2>Dataset Browser integration</h2>
+</ul>
       </section>
     </div>
 
