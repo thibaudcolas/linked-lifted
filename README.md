@@ -8,7 +8,7 @@ Linked-lifted hosts code and tools used while creating new interfaces for linked
 ## tl;dr ##
 
 This module is an interface for [StringToURI]("http://stringtouri.assembla.me/").  
-Version 0.8
+Version 0.9
 
 ## What is StringToURI ? ##
 

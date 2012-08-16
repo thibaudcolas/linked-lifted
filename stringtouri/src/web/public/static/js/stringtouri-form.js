@@ -8,12 +8,30 @@
 
 $(document).ready(function() {
 
-	var ourds = $("#our-dataset");
-	var theirds = $("#their-dataset");
-	var ourclass = $("#our-class");
-	var theirclass = $("#their-class");
-	var ourpredicate = $("#our-predicate");
-	var theirpredicate = $("#their-predicate");
+	$(".hidden-field-js").hide();
+
+	$("#convert-submit, #convert-preview, #convert-run, #convert-help, #convert-cancel").button();
+	$(".multiple-choices").buttonset();
+
+	var $ourds = $("#targetdataset");
+	var $theirds = $("#sourcedataset");
+	var $ourclass = $("#targetclass");
+	var $theirclass = $("#sourceclass");
+	var $ourpredicate = $("#targetpredicate");
+	var $theirpredicate = $("#sourcepredicate");
+
+	$ourds.autocomplete({source: datasets, minLength: 0, delay: 0});
+	$ourds.blur(function() {validateMandatory($ourds, datasets);});
+	$theirds.autocomplete({source: datasets, minLength: 0, delay: 0});
+	$theirds.blur(function() {validateMandatory($theirds, datasets);});
+	$ourclass.autocomplete({source: ourclasses, minLength: 0, delay: 200});
+	$ourclass.blur(function() {validateOptional($ourclass, ourclasses);});
+	$theirclass.autocomplete({source: theirclasses, minLength: 0, delay: 200});
+	$theirclass.blur(function() {validateOptional($theirclass, theirclasses);});
+	$ourpredicate.autocomplete({source: ourpredicates, minLength: 0, delay: 300});
+	$ourpredicate.blur(function() {validateMandatory($ourpredicate, ourpredicates);});
+	$theirpredicate.autocomplete({source: theirpredicates, minLength: 0, delay: 300});
+	$theirpredicate.blur(function() {validateMandatory($theirpredicate, theirpredicates);});
 
 	/*
 	* Applies the ui-state-error style to the container of {@param field}.
@@ -48,7 +66,7 @@ $(document).ready(function() {
 	function defaultState(field) {
 		field.removeClass("ui-state-success");
 		field.parent().removeClass("ui-state-error");
-		field.next("p").contents().first()
+		field.next("p.info").contents().first()
 			.removeClass("ui-icon-help ui-icon-alert ui-icon-check")
 			.hide();
 	}
@@ -130,36 +148,33 @@ $(document).ready(function() {
 	*/
 	function validateAll() {
 		// We have to check fields separately in order to mark the errors.
-		var od = validateMandatory(ourds, datasets);
-		var td = validateMandatory(theirds, datasets);
-		var op = validateMandatory(ourpredicate, ourpredicates);
-		var tp = validateMandatory(theirpredicate, theirpredicates);
-		
-		var ret = od && td && op && tp
-			&& validateOptional(ourclass, ourclasses)
-			&& validateOptional(theirclass, theirclasses);
+		var od = validateMandatory($ourds, datasets);
+		var td = validateMandatory($theirds, datasets);
+		var op = validateMandatory($ourpredicate, ourpredicates);
+		var tp = validateMandatory($theirpredicate, theirpredicates);
 
-		if(ret) {
+		// Require user confirmation if the data is going to be modified permanently.
+		var ret = od && td && op && tp
+					 && validateOptional($ourclass, ourclasses)
+					 && validateOptional($theirclass, theirclasses)
+					 && ($("input:radio[name=update]:checked").val() === "false"
+					 || confirm(confirmationMessage));
+
+		// To avoid forms being sent multiple times.
+		if (ret) {
 			$("#convert-submit").attr("disabled", true);
 		}
+
 		return ret;
 	}
-	
-	$("#convert-submit, #convert-cancel").button();
 
-	ourds.autocomplete({source: datasets, minLength: 0, delay: 0});
-	ourds.blur(function() {validateMandatory(ourds, datasets);});
-	theirds.autocomplete({source: datasets, minLength: 0, delay: 0});
-	theirds.blur(function() {validateMandatory(theirds, datasets);});
-	ourclass.autocomplete({source: ourclasses, minLength: 0, delay: 200});
-	ourclass.blur(function() {validateOptional(ourclass, ourclasses);});
-	theirclass.autocomplete({source: theirclasses, minLength: 0, delay: 200});
-	theirclass.blur(function() {validateOptional(theirclass, theirclasses);});
-	ourpredicate.autocomplete({source: ourpredicates, minLength: 0, delay: 300});
-	ourpredicate.blur(function() {validateMandatory(ourpredicate, ourpredicates);});
-	theirpredicate.autocomplete({source: theirpredicates, minLength: 0, delay: 300});
-	theirpredicate.blur(function() {validateMandatory(theirpredicate, theirpredicates);});
+	$("#convert-help").click(function () {
+		// Could also use slideToggle.
+		$('.help-js').toggle();
+	});
 
-	$("#linkage-form").submit(function(){return validateAll();});
+	$("#linkage-form").submit(function(){
+		return validateAll();
+	});
 
 });

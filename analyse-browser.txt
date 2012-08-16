@@ -1,0 +1,249 @@
+Title: Browser diagnostic
+Author: Thibaud Colas
+Date: 10/07/12
+
+# Browser diagnostic #
+
+## Code metrics ##
+
+    Will:Browser $ cloc browser
+         707 text files.
+         660 unique files.                                          
+         675 files ignored.
+
+    http://cloc.sourceforge.net v 1.56  T=5.0 s (6.4 files/s, 1736.8 lines/s)
+    -------------------------------------------------------------------------------
+    Language                     files          blank        comment           code
+    -------------------------------------------------------------------------------
+    Java                            23            647            542           4858
+    Javascript                       4            174             57           1760
+    CSS                              2             36             32            247
+    HTML                             1             21              2            140
+    XML                              2             36              0            132
+    -------------------------------------------------------------------------------
+    SUM:                            32            914            633           7137
+    -------------------------------------------------------------------------------
+
+Setup preparation : 
+
+> Preparation (for running alignment- and silk-related features):
+> - Fix paths in src/java/org/datalift/browser/external/silk/SilkConnector.java (the output of executing silk.jar cannot be customized, and those paths are environment-dependent)
+> - Setup the alignment server (see http://alignapi.gforge.inria.fr/aserv.html). 
+> The application currently expects the alignment server to run at http://localhost:8089
+
+-------------------------------------------------------------------------------
+
+## Library usage ##
+
+### Real references ###
+
+* org.jdom.Document;
+* org.jdom.Element;
+* org.jdom.Namespace;
+* org.jdom.input.SAXBuilder;
+* org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+* org.apache.commons.httpclient.HttpClient;
+* org.apache.commons.httpclient.HttpException;
+* org.apache.commons.httpclient.HttpStatus;
+* org.apache.commons.httpclient.methods.GetMethod;
+* org.apache.commons.httpclient.params.HttpMethodParams;
+* org.apache.commons.lang.StringEscapeUtils;
+* org.semanticweb.owl.align.Alignment;
+* org.semanticweb.owl.align.Cell;
+* fr.inrialpes.exmo.align.parser.AlignmentParser;
+* com.google.gson.Gson;
+* com.google.gson.GsonBuilder;
+* com.hp.hpl.jena.query.ARQ;
+* com.hp.hpl.jena.query.QuerySolution;
+* com.hp.hpl.jena.query.ResultSet;
+* com.hp.hpl.jena.query.Query;
+* com.hp.hpl.jena.query.QueryExecution;
+* com.hp.hpl.jena.query.QueryExecutionFactory;
+* com.hp.hpl.jena.query.QueryFactory;
+* com.hp.hpl.jena.query.ResultSetFactory;
+* com.hp.hpl.jena.query.ResultSetRewindable;
+* com.hp.hpl.jena.rdf.model.RDFNode;
+* uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
+
+### Available libraries ###
+
+* align.jar            
+* alignsvc.jar         
+* arq-2.8.8-tests.jar  
+* arq-2.8.8.jar        
+* commons-codec-1.4.jar
+* commons-httpclient-3.1.jar
+* commons-lang-2.6.jar      
+* commons-logging-1.1.1.jar 
+* gson-1.7.1.jar            
+* httpclient-4.1.3.jar      
+* httpclient-cache-4.1.3.jar
+* httpcore-4.1.4.jar
+* httpmime-4.1.3.jar
+* icu4j-3.4.4.jar   
+* iri-0.8.jar       
+* jdom.jar          
+* jena-2.6.4-tests.jar
+* jena-2.6.4.jar
+* junit-4.5.jar
+* log4j-1.2.14.jar
+* lucene-core-2.3.1.jar
+* ontowrap.jar
+* procalign.jar
+* servlet-api.jar
+* silk.jar
+* simmetrics_jar_v1_6_2_d07_02_07.jar
+* slf4j-api-1.5.8.jar
+* slf4j-log4j12-1.5.8.jar
+* stax-api-1.0.1.jar
+* wstx-asl-3.2.9.jar
+* xercesImpl-2.7.1.jar
+
+### New ones ###
+
+* http://www.jdom.org/ - jdom 2.0.2
+* http://alignapi.gforge.inria.fr/ - align api 4.3
+* https://jena.apache.org/ - jena 2.7.2
+* https://code.google.com/p/google-gson/ - gson 2.2.2
+* https://hc.apache.org/ - Commons HTTPClient 4.2.1
+* https://commons.apache.org/lang/ - Commons lang 3.1
+* https://code.google.com/p/java-similarities/ - Simmetrics 1.6.2
+* http://www4.wiwiss.fu-berlin.de/bizer/silk/ - Silk 2.5.3
+
+-------------------------------------------------------------------------------
+
+## File usage ##
+
+### Available file resources ###
+
+* ckan
+** One JSON file per dataset
+* discovery
+** Three text files
+* prefixes
+** One file containing correspondance between prefix and URI
+
+### Filepaths in Java ###
+
+* AlignmentServerConnector
+**  static String file_path = "/home/michael/sparql_queries/align/";
+* CKANConnector
+** .getResourceAsStream("../../resources/ckan/" + endpoint)
+* SilkConnector
+** path_lsl_rel = "../webapps/browser/WEB-INF/classes/lsl.xml";
+** verify_filename = "verify_links.xml";
+** accept_filename = "accepted_links.xml";
+** path_verify_rel = "../webapps/browser/WEB-INF/classes/verify_links.xml";
+** path_accept_rel = "../webapps/browser/WEB-INF/classes/accepted_links.xml";
+** path_lsl_full = "/var/lib/tomcat6/webapps/browser/WEB-INF/classes/lsl.xml";
+** path_output_full = "/var/lib/tomcat6/webapps/browser/WEB-INF/classes/output.txt";
+** path_verify_full = "/var/lib/tomcat6/webapps/browser/WEB-INF/classes/verify_links.xml";
+** path_accept_full = "/var/lib/tomcat6/webapps/browser/WEB-INF/classes/accepted_links.xml";
+** path_verify_tmp = "/usr/share/tomcat6/bin/verify_links.xml";
+** path_accept_tmp = "/usr/share/tomcat6/bin/accepted_links.xml";
+** path_silk_full = "/var/lib/tomcat6/webapps/browser/WEB-INF/classes/silk.jar";
+* DatasetComparator
+** File dir = new File("/home/michael/sparql_queries/ckan/packages/concepts/");
+** getResourceAsStream("../../resources/ckan/" 
+** File dir = new File("/home/michael/sparql_queries/ckan/packages/concepts/"
+* Download
+** path = "WEB-INF/classes/lsl.xml";
+** path = "WEB-INF/classes/verify_links.xml";
+** path = "WEB-INF/classes/accepted_links.xml";
+** path = "WEB-INF/classes/output.txt";
+
+-------------------------------------------------------------------------------
+
+## Network calls ##
+
+### Available local URLs ###
+
+* /init -- Form target for tab0 (Dataset Selection)
+* /FilterServlet
+* /UnfilterServlet
+* /GetvalServlet
+* /UngetvalServlet
+* /CKANResultServlet
+* /CKANResourceServlet
+* /NSServlet
+* /AlignmentServerServlet
+* /DatasetDiscoveryServlet
+* /MatcherServlet
+* /Download
+
+### URLs in Java ###
+
+* AlignmentServerConnector
+** String default_server = "http://localhost:8089/rest/";
+** URL url = new URL(server + "store?id=" + id);
+** url = new URL(server + "load");
+** r = client.getResponse("retrieve?method=fr.inrialpes....
+** asc.store("http://localhost:8089/alid/1322756387114/905");
+
+### Calls in main.js ###
+
+* ValueServlet -- Not in available URLs - Part of an ajax example ?
+* CKANResultServlet
+* CKANResourceServlet
+* NSServlet
+* FilterServlet
+* UnfilterServlet
+* GetvalServlet
+* UngetvalServlet
+* MatcherServlet
+* Download
+* AlignmentServerServlet
+* DatasetDiscoveryServlet
+
+-------------------------------------------------------------------------------
+
+## Possible bugs ##
+
+* index.html — Textfield value is hard coded (endpoint URI)
+* -> Check parameters of the POST request
+* AlignmentServerConnector.java - Queries path hard coded
+* -> Check if used
+* SilkConnector.java - Too many hard coded paths
+* -> ...
+* DatasetComparator.java - Hard coded path
+* -> Replace
+* EndpointConnector.java - Hard coded namespaces to only default example
+* -> Replace with dynamic
+* EndpointConnector.java - Hard coded queries ?!
+* -> Check if used
+* SilkConnector.java - Silk call using command line !
+* Process p = Runtime.getRuntime().exec(new String[]{"java", "-DconfigFile=" + path_lsl_full, "-jar", path_silk_full});
+* -> Call Silk properly
+* Download.java - Hard coded path to resulting filepath
+* -> Replace
+* InitServlet.java - All HTML is generated via Java
+* -> Templates
+
+-------------------------------------------------------------------------------
+
+## TODO ##
+
+* Choix réécriture ou corrections
+* CSSLint, JSLint, JS errors, unused CSS, Validator
+* JS Prettify, CSS prettify, CSS lisible, HTML Prettify
+* MAJ jQuery, MAJ jq Autocomplete, MAJ Scrollable Table
+* Compress — CSSify images
+* NEVER use raw types
+* Apply checkstyle fixes
+* Findbugs
+
+-------------------------------------------------------------------------------
+
+## In-depth analysis : "LOD Explorer" ##
+
+Call stack :
+* URL browser -> index.html
+* Link Click -> loadCKANResult('new')
+* JS call -> AJAX GET CKANResultServlet?status=new callback loadCKANView
+* AJAX GET -> doGet()
+* Java call -> doPost()
+* Java call -> new CKANConnector, retrieveEndpoints()
+* Java call -> read .../clan/in.txt, new Gson, new JSONCKANResult, getResultsTable
+* Java call -> HTML table writing, return string
+* JS callback -> innerHTML = response; activateTab(1,2)
+* JS call -> hides other tabs, displays one
